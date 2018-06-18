@@ -23,15 +23,6 @@ export class ArcAds {
     }
   }
 
-  // /**
-  // * @desc Uses conditional ad logic to determine if an ad should be added to the queue.
-  // * @param {string} display - String specifying "mobile", "desktop", or "all" for devices
-  //
-  // **/
-  // queueUpAd() {
-  //
-  // }
-
   /**
   * @desc Registers an advertisement in the service.
   * @param {object} params - An object containing all of the advertisement configuration settings such as slot name, id, and position.
@@ -43,7 +34,8 @@ export class ArcAds {
       adType = false,
       targeting = {},
       display = 'all',
-      bidding = false
+      bidding = false,
+      customAdDisplayLogic = () => false
     } = params;
 
     /* If positional targeting doesn't exist it gets assigned a numeric value
@@ -56,7 +48,7 @@ export class ArcAds {
       Object.assign(params, { targeting: positionParam });
     }
 
-    if ((isMobile.tablet() && display === 'desktop') || (isMobile.any() && display === 'mobile') || (!isMobile.any() && display === 'desktop') || (display === 'all')) {
+    if (((isMobile.any() && display === 'mobile') || (!isMobile.any() && display === 'desktop') || (display === 'all')) || customAdDisplayLogic()) {
       // Registers the advertisement with Prebid.js if enabled on both the unit and wrapper.
       if ((bidding.prebid && bidding.prebid.bids) && (this.wrapper.prebid && this.wrapper.prebid.enabled) && dimensions) {
         queuePrebidCommand.bind(this, addUnit(id, dimensions, bidding.prebid.bids, this.wrapper.prebid));
