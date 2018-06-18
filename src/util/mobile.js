@@ -71,6 +71,13 @@ export class MobileDetection {
   }
 
   /**
+  * @desc Determines if the user is using any tablet-sized device.
+  **/
+  static tablet() {
+    return (this.AndroidTablet() || this.iPad() || this.Kindle() || this.KindleFire() || this.Silk());
+  }
+
+  /**
   * @desc Determines if the user is using a Windows Mobile device.
   **/
   static Windows() {
