@@ -14,7 +14,7 @@ export class ArcAds {
     window.isMobile = MobileDetection;
 
     if (this.dfpId === '') {
-      console.warn(`ArcAds: DFP id is missing from the arcads initialization script. 
+      console.warn(`ArcAds: DFP id is missing from the arcads initialization script.
         Documentation: https://github.com/wapopartners/arc-ads#getting-started`);
     } else {
       initializeGPT();
@@ -23,12 +23,28 @@ export class ArcAds {
     }
   }
 
+  // /**
+  // * @desc Uses conditional ad logic to determine if an ad should be added to the queue.
+  // * @param {string} display - String specifying "mobile", "desktop", or "all" for devices
+  //
+  // **/
+  // queueUpAd() {
+  //
+  // }
+
   /**
   * @desc Registers an advertisement in the service.
   * @param {object} params - An object containing all of the advertisement configuration settings such as slot name, id, and position.
   **/
   registerAd(params) {
-    const { id, dimensions, adType = false, targeting = {}, display = 'all', bidding = false } = params;
+    const {
+      id,
+      dimensions,
+      adType = false,
+      targeting = {},
+      display = 'all',
+      bidding = false
+    } = params;
 
     /* If positional targeting doesn't exist it gets assigned a numeric value
       based on the order and type of the advertisement. This logic is skipped if adType is not defined. */
@@ -40,7 +56,9 @@ export class ArcAds {
       Object.assign(params, { targeting: positionParam });
     }
 
-    if ((isMobile.any() && display === 'mobile') || (!isMobile.any() && display === 'desktop') || (display === 'all')) {
+    const custom = ((window.innerWidth >= window.breakpoints.tablet && display === 'desktop') || (window.innerWidth <= window.breakpoints.tablet && display === 'mobile') || (display === 'all'));
+
+    if ((custom) || (isMobile.any() && display === 'mobile') || (!isMobile.any() && display === 'desktop') || (display === 'all')) {
       // Registers the advertisement with Prebid.js if enabled on both the unit and wrapper.
       if ((bidding.prebid && bidding.prebid.bids) && (this.wrapper.prebid && this.wrapper.prebid.enabled) && dimensions) {
         queuePrebidCommand.bind(this, addUnit(id, dimensions, bidding.prebid.bids, this.wrapper.prebid));
